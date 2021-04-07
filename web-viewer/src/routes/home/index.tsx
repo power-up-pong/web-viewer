@@ -1,5 +1,11 @@
 import { FunctionalComponent, h } from "preact";
-import { StateUpdater, useEffect, useRef, useState } from "preact/hooks";
+import {
+  StateUpdater,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "preact/hooks";
 import Paho, { Message, ConnectionOptions, Client } from "paho-mqtt";
 import style from "./style.css";
 
@@ -43,21 +49,15 @@ const Home: FunctionalComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState>(defaultGameState);
 
-  // TODO: need to move this connection! Made every time.
-  const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
-  const options: ConnectionOptions = {
-    useSSL: false,
-    keepAliveInterval: 60,
-    onSuccess: onConnect(client),
-    // userName: USERNAME,
-    // password: PASSWORD,
-  };
-  client.connect(options);
-  client.onMessageArrived = onMessageArrived(setGameState);
+  client.onMessageArrived = useMemo(() => {
+    return onMessageArrived(setGameState);
+  }, []);
+
+  const context = useMemo(() => {
+    return canvasRef.current.getContext("2d");
+  }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
     if (context) {
       draw(context, gameState);
     }
@@ -96,15 +96,26 @@ const draw = (ctx: CanvasRenderingContext2D, gameState: GameState): void => {
   ctx.fill();
 };
 
-const clearCanvas = (ctx: CanvasRenderingContext2D) => {
+const clearCanvas = (ctx: CanvasRenderingContext2D): void => {
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.fillRect(0, 0, SCALED_MAX, SCALED_MAX);
 };
 
-const onConnect = (client: Client) => () => {
+const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
+
+const onConnect = (client: Client) => (): void => {
   console.log("Connected!");
   client.subscribe("pup/game");
 };
+
+const options: ConnectionOptions = {
+  useSSL: false,
+  keepAliveInterval: 60,
+  onSuccess: onConnect(client),
+  // userName: USERNAME,
+  // password: PASSWORD,
+};
+client.connect(options);
 
 const onMessageArrived = (setGameState: StateUpdater<GameState>) => (
   message: Message
