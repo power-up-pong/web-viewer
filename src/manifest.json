@@ -1,6 +1,6 @@
 {
-  "name": "web-viewer",
-  "short_name": "web-viewer",
+  "name": "Power Up Pong",
+  "short_name": "Power Up Pong",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
