@@ -8,6 +8,21 @@ import {
 } from "preact/hooks";
 import Paho, { Message, ConnectionOptions, Client } from "paho-mqtt";
 import style from "./style.css";
+import {
+  BROKER,
+  BROKER_PORT,
+  DEBUG,
+  GAME_PROPS_TOPIC,
+  GAME_STATE_TOPIC,
+  SCALE,
+  SCALED_MAX,
+} from "./constants";
+import {
+  defaultGameProps,
+  defaultGameState,
+  GameProps,
+  GameState,
+} from "./interfaces";
 
 // useful commands:
 // mosquitto_pub -t cs326/jcalvin -m "Hello World" -h mqtt.eclipseprojects.io
@@ -15,42 +30,13 @@ import style from "./style.css";
 // mosquitto_sub -h iot.cs.calvin.edu -t pup/ctrl1 -u cs326 -P piot
 // https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
 
-const BROKER = "mqtt.eclipseprojects.io/mqtt";
-const BROKER_PORT = 80;
-const USERNAME = "cs326";
-const PASSWORD = "piot";
-
-const PADDLE_WIDTH = 50;
-const MAX_WIDTH = 1023;
-const PADDLE_HALF = PADDLE_WIDTH / 2; // TODO: should this be int division?
-const X_CONSTRAINTS = [0, MAX_WIDTH + PADDLE_HALF];
-const Y_CONSTRAINTS = [0, MAX_WIDTH + PADDLE_HALF];
-const MAX = X_CONSTRAINTS[1];
-const SCALE = 2;
-const SCALED_MAX = MAX / SCALE;
-
-interface GameState {
-  paddle1: number;
-  paddle2: number;
-  ball: [number, number];
-  player1_score: number;
-  player2_score: number;
-}
-
-const defaultGameState: GameState = {
-  paddle1: 50,
-  paddle2: 60,
-  ball: [50, 50],
-  player1_score: -1,
-  player2_score: -2,
-};
-
 const Pong: FunctionalComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState>(defaultGameState);
+  const [gameProps, setGameProps] = useState<GameProps>(defaultGameProps);
 
   client.onMessageArrived = useMemo(() => {
-    return onMessageArrived(setGameState);
+    return onMessageArrived(setGameState, setGameProps);
   }, []);
 
   useEffect(() => {
@@ -63,12 +49,13 @@ const Pong: FunctionalComponent = () => {
 
   return (
     <div class={style.pong}>
-      <div>
+      <div class={style.center}>
+        <p>Game Properties: {JSON.stringify(gameProps)}</p>
         <canvas
           ref={canvasRef}
           height={SCALED_MAX}
           width={SCALED_MAX}
-          style={{ border: "1px solid green" }}
+          style={{ border: "1px solid purple" }}
         />
       </div>
     </div>
@@ -79,6 +66,7 @@ export default Pong;
 
 const draw = (ctx: CanvasRenderingContext2D, gameState: GameState): void => {
   clearCanvas(ctx);
+
   ctx.fillStyle = "#000000";
   ctx.fillRect(10, 10, 50, 50);
 
@@ -105,7 +93,8 @@ const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
 
 const onConnect = (client: Client) => (): void => {
   console.log("Connected!");
-  client.subscribe("pup/game");
+  client.subscribe(GAME_STATE_TOPIC);
+  client.subscribe(GAME_PROPS_TOPIC);
 };
 
 const options: ConnectionOptions = {
@@ -117,9 +106,18 @@ const options: ConnectionOptions = {
 };
 client.connect(options);
 
-const onMessageArrived = (setGameState: StateUpdater<GameState>) => (
-  message: Message
-): void => {
-  console.log(`Message Arrived: ${message.payloadString}`);
-  setGameState(JSON.parse(message.payloadString) as GameState);
+const onMessageArrived = (
+  setGameState: StateUpdater<GameState>,
+  setGameProps: StateUpdater<GameProps>
+) => (message: Message): void => {
+  if (DEBUG) {
+    console.log(`Message Arrived: ${message.destinationName}`);
+    console.log(`Message Arrived: ${message.payloadString}`);
+  }
+
+  if (message.destinationName == GAME_STATE_TOPIC) {
+    setGameState(JSON.parse(message.payloadString) as GameState);
+  } else {
+    setGameProps(JSON.parse(message.payloadString) as GameProps);
+  }
 };
