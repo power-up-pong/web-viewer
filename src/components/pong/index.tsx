@@ -62,14 +62,15 @@ const Pong: FunctionalComponent = () => {
   }, [gameState]);
 
   return (
-    <div class={style.home}>
-      <h1>Power Up Pong!</h1>
-      <canvas
-        ref={canvasRef}
-        height={SCALED_MAX}
-        width={SCALED_MAX}
-        style={{ border: "1px solid green" }}
-      />
+    <div class={style.pong}>
+      <div>
+        <canvas
+          ref={canvasRef}
+          height={SCALED_MAX}
+          width={SCALED_MAX}
+          style={{ border: "1px solid green" }}
+        />
+      </div>
     </div>
   );
 };
