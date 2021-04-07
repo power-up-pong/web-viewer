@@ -9,12 +9,15 @@ import style from "./style.css";
 // mosquitto_sub -h iot.cs.calvin.edu -t pup/ctrl1 -u cs326 -P piot
 // https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
 
+const BROKER = "mqtt.eclipseprojects.io/mqtt";
+const BROKER_PORT = 80;
+
 const Home: FunctionalComponent = () => {
-  const client = new Paho.Client("mqtt.eclipseprojects.io", 80, "clientjs");
+  const client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
 
   const onConnect = () => {
     console.log("Connected!");
-    client.subscribe("pup/ctrl1");
+    client.subscribe("pup/game");
   };
   const options: ConnectionOptions = {
     useSSL: false,
@@ -27,7 +30,7 @@ const Home: FunctionalComponent = () => {
 
   const onMessageArrived = (message: Message) => {
     console.log("Message Arrived:" + message.payloadString);
-    document.getElementById("msg")!.innerHTML += message.payloadString + "\n";
+    // document.getElementById("msg")!.innerHTML += message.payloadString + "\n";
   };
   client.onMessageArrived = onMessageArrived;
 
