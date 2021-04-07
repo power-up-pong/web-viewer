@@ -53,11 +53,9 @@ const Home: FunctionalComponent = () => {
     return onMessageArrived(setGameState);
   }, []);
 
-  const context = useMemo(() => {
-    return canvasRef.current.getContext("2d");
-  }, []);
-
   useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext("2d");
     if (context) {
       draw(context, gameState);
     }
