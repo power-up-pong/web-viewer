@@ -94,6 +94,7 @@ const draw = (ctx: CanvasRenderingContext2D, gameState: GameState): void => {
   ctx.fill();
 };
 
+// ref: https://stackoverflow.com/a/54153800/9931154
 const clearCanvas = (ctx: CanvasRenderingContext2D): void => {
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.fillRect(0, 0, SCALED_MAX, SCALED_MAX);
