@@ -1,6 +1,6 @@
 import { FunctionalComponent, h } from "preact";
 import { useEffect, useRef } from "preact/hooks";
-import Paho, { Message, ConnectionOptions } from "paho-mqtt";
+import Paho, { Message, ConnectionOptions, Client } from "paho-mqtt";
 import style from "./style.css";
 
 // useful commands:
@@ -11,58 +11,37 @@ import style from "./style.css";
 
 const BROKER = "mqtt.eclipseprojects.io/mqtt";
 const BROKER_PORT = 80;
+const USERNAME = "cs326";
+const PASSWORD = "piot";
 
 const Home: FunctionalComponent = () => {
-  const client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const onConnect = () => {
-    console.log("Connected!");
-    client.subscribe("pup/game");
-  };
+  const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
   const options: ConnectionOptions = {
     useSSL: false,
     keepAliveInterval: 60,
-    onSuccess: onConnect,
-    // userName: "cs326",
-    // password: "piot"
+    onSuccess: onConnect(client),
+    // userName: USERNAME,
+    // password: PASSWORD,
   };
   client.connect(options);
-
-  const onMessageArrived = (message: Message) => {
-    console.log("Message Arrived:" + message.payloadString);
-    // document.getElementById("msg")!.innerHTML += message.payloadString + "\n";
-  };
   client.onMessageArrived = onMessageArrived;
-
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const draw = (ctx: CanvasRenderingContext2D) => {
-    ctx.fillStyle = "#000000";
-    ctx.beginPath();
-    ctx.arc(50, 100, 20, 0, 2 * Math.PI);
-    ctx.fill();
-  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     //Our first draw
     if (context) {
-      context.fillStyle = "#000000";
-      context.fillRect(10, 10, 50, 50);
       draw(context);
     }
-  }, [draw]);
+  }, []);
 
   return (
     <div class={style.home}>
-      <h1>Home</h1>
-      <p>This is the Home component.</p>
-      <p>Hello there</p>
-      <p id="msg"></p>
+      <h1>Power Up Pong!</h1>
       <canvas
         ref={canvasRef}
-        id="myCanvas"
         height={500}
         width={500}
         style={{ border: "1px solid green" }}
@@ -72,3 +51,21 @@ const Home: FunctionalComponent = () => {
 };
 
 export default Home;
+
+const draw = (ctx: CanvasRenderingContext2D): void => {
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(10, 10, 50, 50);
+  ctx.fillStyle = "#000000";
+  ctx.beginPath();
+  ctx.arc(50, 100, 20, 0, 2 * Math.PI);
+  ctx.fill();
+};
+
+const onConnect = (client: Client) => () => {
+  console.log("Connected!");
+  client.subscribe("pup/game");
+};
+
+const onMessageArrived = (message: Message): void => {
+  console.log(`Message Arrived: ${message.payloadString}`);
+};
