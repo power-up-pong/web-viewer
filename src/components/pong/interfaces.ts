@@ -15,10 +15,21 @@ export interface GameProps {
   powerup_radius: number;
 }
 
+export interface DerivedConstants {
+  PADDLE_WIDTH: number;
+  X_CONSTRAINTS: [number, number];
+  Y_CONSTRAINTS: [number, number];
+  POWERUP_RADIUS: number;
+  CANVAS_PADDING: number;
+  SCALE: number;
+  CANVAS_HEIGHT: number;
+  CANVAS_WIDTH: number;
+}
+
 export const defaultGameState: GameState = {
   paddle1: 50,
   paddle2: 60,
-  ball: [50, 50],
+  ball: [100, 100],
   player1_score: -1,
   player2_score: -2,
 };

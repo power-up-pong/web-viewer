@@ -7,22 +7,22 @@ import {
   useState,
 } from "preact/hooks";
 import Paho, { Message, ConnectionOptions, Client } from "paho-mqtt";
-import style from "./style.css";
 import {
   BROKER,
   BROKER_PORT,
   DEBUG,
   GAME_PROPS_TOPIC,
   GAME_STATE_TOPIC,
-  SCALE,
-  SCALED_MAX,
 } from "./constants";
 import {
   defaultGameProps,
   defaultGameState,
+  DerivedConstants,
   GameProps,
   GameState,
 } from "./interfaces";
+import style from "./style.css";
+import { getDerivedConstants } from "./getDerivedConstants";
 
 // useful commands:
 // mosquitto_pub -t cs326/jcalvin -m "Hello World" -h mqtt.eclipseprojects.io
@@ -39,22 +39,39 @@ const Pong: FunctionalComponent = () => {
     return onMessageArrived(setGameState, setGameProps);
   }, []);
 
+  const derivedConstants = useMemo(() => {
+    return getDerivedConstants(gameProps);
+  }, [gameProps]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     if (context) {
-      draw(context, gameState);
+      draw(context, gameState, gameProps, derivedConstants);
     }
-  }, [gameState]);
+  }, [gameState, gameProps, derivedConstants]);
+
+  const { CANVAS_HEIGHT, CANVAS_WIDTH } = derivedConstants;
+  const { player1_score, player2_score } = gameState;
 
   return (
     <div class={style.pong}>
       <div class={style.center}>
         <p>Game Properties: {JSON.stringify(gameProps)}</p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <h2>Player 1 Score: {player1_score}</h2>
+          <h2>Player 2 Score: {player2_score}</h2>
+        </div>
         <canvas
           ref={canvasRef}
-          height={SCALED_MAX}
-          width={SCALED_MAX}
+          height={CANVAS_HEIGHT}
+          width={CANVAS_WIDTH}
           style={{ border: "1px solid purple" }}
         />
       </div>
@@ -64,29 +81,68 @@ const Pong: FunctionalComponent = () => {
 
 export default Pong;
 
-const draw = (ctx: CanvasRenderingContext2D, gameState: GameState): void => {
-  clearCanvas(ctx);
+// ref: https://stackoverflow.com/a/54153800/9931154
+const clearCanvas = (
+  ctx: CanvasRenderingContext2D,
+  { CANVAS_HEIGHT, CANVAS_WIDTH }: DerivedConstants
+): void => {
+  ctx.fillStyle = "rgb(255, 255, 255)";
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+};
+
+const draw = (
+  ctx: CanvasRenderingContext2D,
+  gameState: GameState,
+  gameProps: GameProps,
+  derivedConstants: DerivedConstants
+): void => {
+  const { paddle_width: paddleLength } = gameProps;
+  const {
+    paddle1,
+    paddle2,
+    ball: [ballX, ballY],
+  } = gameState;
+  const {
+    SCALE,
+    CANVAS_PADDING,
+    CANVAS_WIDTH,
+    X_CONSTRAINTS,
+    Y_CONSTRAINTS,
+  } = derivedConstants;
+  const HALF_PADDING = CANVAS_PADDING / 2;
+  const PADDLE_THICKNESS = 1;
+  const BALL_RADIUS = 1;
+
+  clearCanvas(ctx, derivedConstants);
 
   ctx.fillStyle = "#000000";
-  ctx.fillRect(10, 10, 50, 50);
+  // todo: need to subtract 25?
+  ctx.fillRect(
+    HALF_PADDING,
+    (paddle1 + Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
+    PADDLE_THICKNESS,
+    paddleLength
+  );
+  ctx.fillRect(
+    CANVAS_WIDTH - HALF_PADDING,
+    (paddle2 + Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
+    PADDLE_THICKNESS,
+    paddleLength
+  );
 
   // draw ball
   ctx.fillStyle = "#000000";
-  ctx.beginPath();
-  ctx.arc(
-    gameState.ball[0] / SCALE,
-    gameState.ball[1] / SCALE,
-    20,
-    0,
-    2 * Math.PI
-  );
-  ctx.fill();
-};
+  const calculatedBallX = (ballX - X_CONSTRAINTS[0]) * SCALE + HALF_PADDING;
+  const calculatedBallY = (ballY - Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING;
 
-// ref: https://stackoverflow.com/a/54153800/9931154
-const clearCanvas = (ctx: CanvasRenderingContext2D): void => {
-  ctx.fillStyle = "rgb(255, 255, 255)";
-  ctx.fillRect(0, 0, SCALED_MAX, SCALED_MAX);
+  if (DEBUG) {
+    console.log(HALF_PADDING, SCALE);
+    console.log(ballX, ballY);
+    console.log(calculatedBallX, calculatedBallY);
+  }
+  ctx.beginPath();
+  ctx.arc(calculatedBallX, calculatedBallY, BALL_RADIUS, 0, 2 * Math.PI);
+  ctx.fill();
 };
 
 const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
@@ -104,6 +160,7 @@ const options: ConnectionOptions = {
   // userName: USERNAME,
   // password: PASSWORD,
 };
+
 client.connect(options);
 
 const onMessageArrived = (
