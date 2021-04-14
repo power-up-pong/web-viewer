@@ -111,7 +111,7 @@ const draw = (
   } = derivedConstants;
   const HALF_PADDING = CANVAS_PADDING / 2;
   const PADDLE_THICKNESS = 1;
-  const BALL_RADIUS = 1;
+  const BALL_RADIUS = 2;
 
   clearCanvas(ctx, derivedConstants);
 
@@ -119,15 +119,15 @@ const draw = (
   // todo: need to subtract 25?
   ctx.fillRect(
     HALF_PADDING,
-    (paddle1 + Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
+    paddle1 * SCALE + HALF_PADDING,
     PADDLE_THICKNESS,
-    paddleLength
+    paddleLength * SCALE
   );
   ctx.fillRect(
     CANVAS_WIDTH - HALF_PADDING,
-    (paddle2 + Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
+    paddle2 * SCALE + HALF_PADDING,
     PADDLE_THICKNESS,
-    paddleLength
+    paddleLength * SCALE
   );
 
   // draw ball
