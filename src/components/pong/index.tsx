@@ -96,11 +96,14 @@ const draw = (
   gameProps: GameProps,
   derivedConstants: DerivedConstants
 ): void => {
-  const { paddle_width: paddleLength } = gameProps;
+  const { powerup_radius } = gameProps;
   const {
     paddle1,
     paddle2,
     ball: [ballX, ballY],
+    powerups,
+    paddle1_width,
+    paddle2_width,
   } = gameState;
   const {
     SCALE,
@@ -116,19 +119,38 @@ const draw = (
   clearCanvas(ctx, derivedConstants);
 
   ctx.fillStyle = "#000000";
-  // todo: need to subtract 25?
+  // draw paddle 1
   ctx.fillRect(
     HALF_PADDING,
     paddle1 * SCALE + HALF_PADDING,
     PADDLE_THICKNESS,
-    paddleLength * SCALE
+    paddle1_width * SCALE
   );
+
+  // draw paddle 2
   ctx.fillRect(
     CANVAS_WIDTH - HALF_PADDING,
     paddle2 * SCALE + HALF_PADDING,
     PADDLE_THICKNESS,
-    paddleLength * SCALE
+    paddle2_width * SCALE
   );
+
+  // draw powerups
+  if (powerups.length > 0) {
+    powerups.forEach((powerup) => {
+      const { pos, type } = powerup;
+      ctx.fillStyle = type === "paddleGrow" ? "green" : "orange";
+      if (pos !== null) {
+        const [xPos, yPos] = pos;
+        ctx.fillRect(
+          (xPos + 0) * SCALE,
+          (yPos + 0) * SCALE,
+          powerup_radius * 2 * SCALE,
+          powerup_radius * 2 * SCALE
+        );
+      }
+    });
+  }
 
   // draw ball
   ctx.fillStyle = "#000000";

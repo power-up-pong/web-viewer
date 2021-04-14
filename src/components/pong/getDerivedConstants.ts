@@ -2,12 +2,10 @@ import { DerivedConstants, GameProps } from "./interfaces";
 
 /* get constants related to the game props */
 export const getDerivedConstants = ({
-  paddle_width,
   powerup_radius,
   x_constraints,
   y_constraints,
 }: GameProps): DerivedConstants => {
-  const PADDLE_WIDTH = paddle_width;
   const X_CONSTRAINTS = x_constraints;
   const Y_CONSTRAINTS = y_constraints;
   const POWERUP_RADIUS = powerup_radius;
@@ -19,7 +17,6 @@ export const getDerivedConstants = ({
     (X_CONSTRAINTS[1] - X_CONSTRAINTS[0]) * SCALE + CANVAS_PADDING;
 
   return {
-    PADDLE_WIDTH,
     X_CONSTRAINTS,
     Y_CONSTRAINTS,
     POWERUP_RADIUS,
