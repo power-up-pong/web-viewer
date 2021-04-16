@@ -143,8 +143,8 @@ const draw = (
       if (pos !== null) {
         const [xPos, yPos] = pos;
         ctx.fillRect(
-          (xPos + 0) * SCALE,
-          (yPos + 0) * SCALE,
+          (xPos - powerup_radius - X_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
+          (yPos - powerup_radius - Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
           powerup_radius * 2 * SCALE,
           powerup_radius * 2 * SCALE
         );
