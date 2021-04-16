@@ -13,7 +13,7 @@ export interface GameState {
 
 export interface Powerup {
   pos: [number, number] | null;
-  type: "paddleGrow" | "fastBall";
+  type: "paddleGrow" | "fastBall" | "trackBall";
   owner: string | null;
   time_used: number | null;
 }

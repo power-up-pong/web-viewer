@@ -139,7 +139,7 @@ const draw = (
   if (powerups.length > 0) {
     powerups.forEach((powerup) => {
       const { pos, type } = powerup;
-      ctx.fillStyle = type === "paddleGrow" ? "green" : "orange";
+      ctx.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
       if (pos !== null) {
         const [xPos, yPos] = pos;
         ctx.fillRect(
