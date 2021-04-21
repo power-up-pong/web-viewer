@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 export interface GameState {
-  paddle1: number;
-  paddle2: number;
-  paddle1_width: number;
-  paddle2_width: number;
+  players: [PlayerState, PlayerState];
   ball: [number, number];
-  player1_score: number;
-  player2_score: number;
   powerups: Powerup[];
-  powerups1: Powerup[];
-  powerups2: Powerup[];
+}
+
+export interface PlayerState {
+  id: number;
+  score: number;
+  paddle_pos: number;
+  paddle_width: number;
+  powerups: Powerup[];
 }
 
 export interface Powerup {
@@ -36,21 +37,22 @@ export interface DerivedConstants {
   CANVAS_WIDTH: number;
 }
 
-export const defaultGameState: GameState = {
-  paddle1: 50,
-  paddle2: 60,
-  paddle1_width: -1,
-  paddle2_width: -1,
-  ball: [100, 100],
-  player1_score: -1,
-  player2_score: -2,
+export const defaultPlayerState: PlayerState = {
+  id: 1,
+  score: -1,
+  paddle_pos: 100,
+  paddle_width: 200,
   powerups: [],
-  powerups1: [],
-  powerups2: []
+};
+
+export const defaultGameState: GameState = {
+  players: [defaultPlayerState, defaultPlayerState],
+  ball: [100, 100],
+  powerups: [],
 };
 
 export const defaultGameProps: GameProps = {
-  x_constraints: [0, -500],
-  y_constraints: [0, -500],
-  powerup_radius: -2,
+  x_constraints: [-100, 1123],
+  y_constraints: [-100, 1123],
+  powerup_radius: 20,
 };

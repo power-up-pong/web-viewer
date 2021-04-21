@@ -1,3 +1,9 @@
+/*
+A web viewer for a Power-Up Pong game using websockets
+Written by Jon Ellis, Charlie Kornoelje, and Ryan Vreeke
+for CS 326 Final Project at Calvin University, April 2021
+*/
+
 import { FunctionalComponent, h } from "preact";
 import {
   StateUpdater,
@@ -13,6 +19,8 @@ import {
   DEBUG,
   GAME_PROPS_TOPIC,
   GAME_STATE_TOPIC,
+  USERNAME,
+  PASSWORD
 } from "./constants";
 import {
   defaultGameProps,
@@ -23,6 +31,7 @@ import {
 } from "./interfaces";
 import style from "./style.css";
 import { getDerivedConstants } from "./getDerivedConstants";
+import { map } from "lodash";
 
 // useful commands:
 // mosquitto_pub -t cs326/jcalvin -m "Hello World" -h mqtt.eclipseprojects.io
@@ -56,7 +65,7 @@ const Pong: FunctionalComponent = () => {
   }, [gameState, gameProps, derivedConstants]);
 
   const { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS } = derivedConstants;
-  const { player1_score, player2_score } = gameState;
+  const [ player1_score, player2_score ] = map(gameState.players, "score");
 
   return (
     <div class={style.pong}>
@@ -114,15 +123,20 @@ const draw = (
 ): void => {
   const { powerup_radius } = gameProps;
   const {
-    paddle1,
-    paddle2,
+    players: [ player1, player2 ],
     ball: [ballX, ballY],
     powerups,
-    powerups1,
-    powerups2,
-    paddle1_width,
-    paddle2_width,
   } = gameState;
+  const {
+    paddle_pos: paddle1,
+    powerups: powerups1,
+    paddle_width: paddle1_width,
+  } = player1;
+  const {
+    paddle_pos: paddle2,
+    powerups: powerups2,
+    paddle_width: paddle2_width,
+  } = player2;
   const {
     SCALE,
     CANVAS_PADDING,
@@ -227,8 +241,8 @@ const options: ConnectionOptions = {
   useSSL: false,
   keepAliveInterval: 60,
   onSuccess: onConnect(client),
-  // userName: USERNAME,
-  // password: PASSWORD,
+  userName: USERNAME,
+  password: PASSWORD,
 };
 
 client.connect(options);
