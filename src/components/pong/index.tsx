@@ -32,6 +32,7 @@ import { getDerivedConstants } from "./getDerivedConstants";
 
 const Pong: FunctionalComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef_powerup = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState>(defaultGameState);
   const [gameProps, setGameProps] = useState<GameProps>(defaultGameProps);
 
@@ -46,18 +47,22 @@ const Pong: FunctionalComponent = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
-    if (context) {
-      draw(context, gameState, gameProps, derivedConstants);
+    const canvas_powerup = canvasRef_powerup.current;
+    const context_powerup = canvas_powerup.getContext("2d");
+    if (context && context_powerup) {
+      console.log(context)
+      draw(context, context_powerup, gameState, gameProps, derivedConstants);
     }
   }, [gameState, gameProps, derivedConstants]);
 
-  const { CANVAS_HEIGHT, CANVAS_WIDTH } = derivedConstants;
+  const { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS } = derivedConstants;
   const { player1_score, player2_score } = gameState;
 
   return (
     <div class={style.pong}>
       <div class={style.center}>
-        <p>Game Properties: {JSON.stringify(gameProps)}</p>
+        {/* <p>Game State: {JSON.stringify(gameState)}</p> */}
+        {/* <p>Game Properties: {JSON.stringify(gameProps)}</p> */}
         <div
           style={{
             display: "flex",
@@ -68,6 +73,13 @@ const Pong: FunctionalComponent = () => {
           <h2>Player 1 Score: {player1_score}</h2>
           <h2>Player 2 Score: {player2_score}</h2>
         </div>
+        <h2>PowerUps</h2>
+        <canvas
+          ref={canvasRef_powerup}
+          height={POWERUP_RADIUS * 2}
+          width={CANVAS_WIDTH}
+          style={{ border: "1px solid purple" }}
+        />
         <canvas
           ref={canvasRef}
           height={CANVAS_HEIGHT}
@@ -84,14 +96,18 @@ export default Pong;
 // ref: https://stackoverflow.com/a/54153800/9931154
 const clearCanvas = (
   ctx: CanvasRenderingContext2D,
-  { CANVAS_HEIGHT, CANVAS_WIDTH }: DerivedConstants
+  ctx_powerup: CanvasRenderingContext2D,
+  { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS }: DerivedConstants
 ): void => {
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx_powerup.fillStyle = "rgb(255, 255, 255)";
+  ctx_powerup.fillRect(0, 0, CANVAS_WIDTH, POWERUP_RADIUS * 2);
 };
 
 const draw = (
   ctx: CanvasRenderingContext2D,
+  ctx_powerup: CanvasRenderingContext2D,
   gameState: GameState,
   gameProps: GameProps,
   derivedConstants: DerivedConstants
@@ -102,6 +118,8 @@ const draw = (
     paddle2,
     ball: [ballX, ballY],
     powerups,
+    powerups1,
+    powerups2,
     paddle1_width,
     paddle2_width,
   } = gameState;
@@ -116,7 +134,7 @@ const draw = (
   const PADDLE_THICKNESS = 1;
   const BALL_RADIUS = 2;
 
-  clearCanvas(ctx, derivedConstants);
+  clearCanvas(ctx, ctx_powerup, derivedConstants);
 
   ctx.fillStyle = "#000000";
   // draw paddle 1
@@ -147,6 +165,36 @@ const draw = (
           (yPos - powerup_radius - Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
           powerup_radius * 2 * SCALE,
           powerup_radius * 2 * SCALE
+        );
+      }
+    });
+  }
+
+  if (powerups1.length > 0) {
+    powerups1.forEach((powerup, i) => {
+      const { pos, type } = powerup;
+      ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+      if (i < 5) {
+        ctx_powerup.fillRect(
+          (5 + (i * 20)),
+          5,
+          15,
+          15
+        );
+      }
+    });
+  }
+
+  if (powerups2.length > 0) {
+    powerups2.forEach((powerup, i) => {
+      const { pos, type } = powerup;
+      ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+      if (i < 5) {
+        ctx_powerup.fillRect(
+          CANVAS_WIDTH - (20 * i) - 20,
+          5,
+          15,
+          15
         );
       }
     });

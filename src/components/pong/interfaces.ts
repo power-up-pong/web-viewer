@@ -9,6 +9,8 @@ export interface GameState {
   player1_score: number;
   player2_score: number;
   powerups: Powerup[];
+  powerups1: Powerup[];
+  powerups2: Powerup[];
 }
 
 export interface Powerup {
@@ -43,6 +45,8 @@ export const defaultGameState: GameState = {
   player1_score: -1,
   player2_score: -2,
   powerups: [],
+  powerups1: [],
+  powerups2: []
 };
 
 export const defaultGameProps: GameProps = {
