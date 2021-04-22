@@ -20,7 +20,7 @@ import {
   GAME_PROPS_TOPIC,
   GAME_STATE_TOPIC,
   USERNAME,
-  PASSWORD
+  PASSWORD,
 } from "./constants";
 import {
   defaultGameProps,
@@ -59,13 +59,12 @@ const Pong: FunctionalComponent = () => {
     const canvas_powerup = canvasRef_powerup.current;
     const context_powerup = canvas_powerup.getContext("2d");
     if (context && context_powerup) {
-      console.log(context)
       draw(context, context_powerup, gameState, gameProps, derivedConstants);
     }
   }, [gameState, gameProps, derivedConstants]);
 
   const { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS } = derivedConstants;
-  const [ player1_score, player2_score ] = map(gameState.players, "score");
+  const [player1_score, player2_score] = map(gameState.players, "score");
 
   return (
     <div class={style.pong}>
@@ -123,7 +122,7 @@ const draw = (
 ): void => {
   const { powerup_radius } = gameProps;
   const {
-    players: [ player1, player2 ],
+    players: [player1, player2],
     ball: [ballX, ballY],
     powerups,
   } = gameState;
@@ -171,7 +170,12 @@ const draw = (
   if (powerups.length > 0) {
     powerups.forEach((powerup) => {
       const { pos, type } = powerup;
-      ctx.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+      ctx.fillStyle =
+        type === "paddleGrow"
+          ? "green"
+          : type === "fastBall"
+          ? "orange"
+          : "purple";
       if (pos !== null) {
         const [xPos, yPos] = pos;
         ctx.fillRect(
@@ -187,14 +191,14 @@ const draw = (
   if (powerups1.length > 0) {
     powerups1.forEach((powerup, i) => {
       const { pos, type } = powerup;
-      ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+      ctx_powerup.fillStyle =
+        type === "paddleGrow"
+          ? "green"
+          : type === "fastBall"
+          ? "orange"
+          : "purple";
       if (i < 5) {
-        ctx_powerup.fillRect(
-          (5 + (i * 20)),
-          5,
-          15,
-          15
-        );
+        ctx_powerup.fillRect(5 + i * 20, 5, 15, 15);
       }
     });
   }
@@ -202,14 +206,14 @@ const draw = (
   if (powerups2.length > 0) {
     powerups2.forEach((powerup, i) => {
       const { pos, type } = powerup;
-      ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+      ctx_powerup.fillStyle =
+        type === "paddleGrow"
+          ? "green"
+          : type === "fastBall"
+          ? "orange"
+          : "purple";
       if (i < 5) {
-        ctx_powerup.fillRect(
-          CANVAS_WIDTH - (20 * i) - 20,
-          5,
-          15,
-          15
-        );
+        ctx_powerup.fillRect(CANVAS_WIDTH - 20 * i - 20, 5, 15, 15);
       }
     });
   }
