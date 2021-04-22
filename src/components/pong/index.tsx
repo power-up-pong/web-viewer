@@ -84,7 +84,8 @@ const Pong: FunctionalComponent = () => {
         <h2>PowerUps</h2>
         <canvas
           ref={canvasRef_powerup}
-          height={POWERUP_RADIUS * 2}
+          // TODO: make this height a constant to use within the draw function
+          height={25}
           width={CANVAS_WIDTH}
           style={{ border: "1px solid purple" }}
         />
