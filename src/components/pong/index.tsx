@@ -28,6 +28,7 @@ import {
   DerivedConstants,
   GameProps,
   GameState,
+  Powerup,
 } from "./interfaces";
 import style from "./style.css";
 import { getDerivedConstants } from "./getDerivedConstants";
@@ -177,42 +178,15 @@ const draw = (
         ctx.fillRect(
           (xPos - powerup_radius - X_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
           (yPos - powerup_radius - Y_CONSTRAINTS[0]) * SCALE + HALF_PADDING,
-          powerup_radius * 2 * SCALE,
-          powerup_radius * 2 * SCALE
+          2 * powerup_radius * SCALE,
+          2 * powerup_radius * SCALE
         );
       }
     });
   }
 
-  if (powerups1.length > 0) {
-    powerups1.forEach((powerup, i) => {
-      const { pos, type } = powerup;
-      ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
-      if (i < 5) {
-        ctx_powerup.fillRect(
-          (5 + (i * 20)),
-          5,
-          15,
-          15
-        );
-      }
-    });
-  }
-
-  if (powerups2.length > 0) {
-    powerups2.forEach((powerup, i) => {
-      const { pos, type } = powerup;
-      ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
-      if (i < 5) {
-        ctx_powerup.fillRect(
-          CANVAS_WIDTH - (20 * i) - 20,
-          5,
-          15,
-          15
-        );
-      }
-    });
-  }
+  drawPowerupQueue(ctx_powerup, powerups1, CANVAS_WIDTH)
+  drawPowerupQueue(ctx_powerup, powerups2, CANVAS_WIDTH, false)
 
   // draw ball
   ctx.fillStyle = "#000000";
@@ -228,6 +202,37 @@ const draw = (
   ctx.arc(calculatedBallX, calculatedBallY, BALL_RADIUS, 0, 2 * Math.PI);
   ctx.fill();
 };
+
+const drawPowerupQueue = (ctx_powerup: CanvasRenderingContext2D, powerups: Powerup[], canvasWidth: number, left: boolean = true) => {
+  const POWERUP_CANVAS_WIDTH = 15;
+  const POWERUP_CANVAS_OFFSET = 5;
+  const MAX_POWERUPS_SHOWN = 5;
+  const USED_POWERUP_BORDER = 4;
+  if (powerups.length > 0) {
+    powerups.forEach((powerup, i) => {
+      const xPos = left ? (POWERUP_CANVAS_OFFSET + (i * (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH))): canvasWidth - ((POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH) * i) - (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH)
+      const { time_used, type } = powerup;
+      if (i < MAX_POWERUPS_SHOWN) {
+        if (time_used !== null) {
+          ctx_powerup.fillStyle = "red"
+          ctx_powerup.fillRect(
+            xPos - USED_POWERUP_BORDER / 2,
+            POWERUP_CANVAS_OFFSET - USED_POWERUP_BORDER / 2,
+            POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER,
+            POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER
+            );
+        }
+        ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+        ctx_powerup.fillRect(
+          xPos,
+          POWERUP_CANVAS_OFFSET,
+          POWERUP_CANVAS_WIDTH,
+          POWERUP_CANVAS_WIDTH
+        );
+      }
+    });
+  }
+}
 
 const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
 
