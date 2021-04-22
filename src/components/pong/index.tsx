@@ -20,7 +20,7 @@ import {
   GAME_PROPS_TOPIC,
   GAME_STATE_TOPIC,
   USERNAME,
-  PASSWORD
+  PASSWORD,
 } from "./constants";
 import {
   defaultGameProps,
@@ -60,13 +60,12 @@ const Pong: FunctionalComponent = () => {
     const canvas_powerup = canvasRef_powerup.current;
     const context_powerup = canvas_powerup.getContext("2d");
     if (context && context_powerup) {
-      console.log(context)
       draw(context, context_powerup, gameState, gameProps, derivedConstants);
     }
   }, [gameState, gameProps, derivedConstants]);
 
   const { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS } = derivedConstants;
-  const [ player1_score, player2_score ] = map(gameState.players, "score");
+  const [player1_score, player2_score] = map(gameState.players, "score");
 
   return (
     <div class={style.pong}>
@@ -86,7 +85,8 @@ const Pong: FunctionalComponent = () => {
         <h2>PowerUps</h2>
         <canvas
           ref={canvasRef_powerup}
-          height={POWERUP_RADIUS * 2}
+          // TODO: make this height a constant to use within the draw function
+          height={25}
           width={CANVAS_WIDTH}
           style={{ border: "1px solid purple" }}
         />
@@ -124,7 +124,7 @@ const draw = (
 ): void => {
   const { powerup_radius } = gameProps;
   const {
-    players: [ player1, player2 ],
+    players: [player1, player2],
     ball: [ballX, ballY],
     powerups,
   } = gameState;
@@ -172,7 +172,12 @@ const draw = (
   if (powerups.length > 0) {
     powerups.forEach((powerup) => {
       const { pos, type } = powerup;
-      ctx.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+      ctx.fillStyle =
+        type === "paddleGrow"
+          ? "green"
+          : type === "fastBall"
+          ? "orange"
+          : "purple";
       if (pos !== null) {
         const [xPos, yPos] = pos;
         ctx.fillRect(
@@ -185,8 +190,8 @@ const draw = (
     });
   }
 
-  drawPowerupQueue(ctx_powerup, powerups1, CANVAS_WIDTH)
-  drawPowerupQueue(ctx_powerup, powerups2, CANVAS_WIDTH, false)
+  drawPowerupQueue(ctx_powerup, powerups1, CANVAS_WIDTH);
+  drawPowerupQueue(ctx_powerup, powerups2, CANVAS_WIDTH, false);
 
   // draw ball
   ctx.fillStyle = "#000000";
@@ -203,26 +208,41 @@ const draw = (
   ctx.fill();
 };
 
-const drawPowerupQueue = (ctx_powerup: CanvasRenderingContext2D, powerups: Powerup[], canvasWidth: number, left: boolean = true) => {
+const drawPowerupQueue = (
+  ctx_powerup: CanvasRenderingContext2D,
+  powerups: Powerup[],
+  canvasWidth: number,
+  left: boolean = true
+) => {
   const POWERUP_CANVAS_WIDTH = 15;
   const POWERUP_CANVAS_OFFSET = 5;
   const MAX_POWERUPS_SHOWN = 5;
   const USED_POWERUP_BORDER = 4;
   if (powerups.length > 0) {
     powerups.forEach((powerup, i) => {
-      const xPos = left ? (POWERUP_CANVAS_OFFSET + (i * (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH))): canvasWidth - ((POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH) * i) - (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH)
+      const xPos = left
+        ? POWERUP_CANVAS_OFFSET +
+          i * (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH)
+        : canvasWidth -
+          (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH) * i -
+          (POWERUP_CANVAS_OFFSET + POWERUP_CANVAS_WIDTH);
       const { time_used, type } = powerup;
       if (i < MAX_POWERUPS_SHOWN) {
         if (time_used !== null) {
-          ctx_powerup.fillStyle = "red"
+          ctx_powerup.fillStyle = "red";
           ctx_powerup.fillRect(
             xPos - USED_POWERUP_BORDER / 2,
             POWERUP_CANVAS_OFFSET - USED_POWERUP_BORDER / 2,
             POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER,
             POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER
-            );
+          );
         }
-        ctx_powerup.fillStyle = type === "paddleGrow" ? "green" : type === "fastBall" ? "orange" : "purple";
+        ctx_powerup.fillStyle =
+          type === "paddleGrow"
+            ? "green"
+            : type === "fastBall"
+            ? "orange"
+            : "purple";
         ctx_powerup.fillRect(
           xPos,
           POWERUP_CANVAS_OFFSET,
@@ -232,7 +252,7 @@ const drawPowerupQueue = (ctx_powerup: CanvasRenderingContext2D, powerups: Power
       }
     });
   }
-}
+};
 
 const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
 
