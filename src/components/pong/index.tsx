@@ -82,7 +82,53 @@ const Pong: FunctionalComponent = () => {
           <h2>Player 1 Score: {player1_score}</h2>
           <h2>Player 2 Score: {player2_score}</h2>
         </div>
-        <h2>PowerUps</h2>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "41%",
+          }}
+        >
+          <h1>PowerUps</h1>
+          <div id={style.squares}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div id={style.square1}></div>
+              <p class={style.squareText}>
+                Grow
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div id={style.square2}></div>
+              <p class={style.squareText}>
+                FastBall
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <div id={style.square3}></div>
+              <p class={style.squareText}>
+                Follow
+              </p>
+            </div>
+          </div>
+        </div>
         <canvas
           ref={canvasRef_powerup}
           // TODO: make this height a constant to use within the draw function
