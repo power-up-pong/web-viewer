@@ -301,7 +301,7 @@ const drawPowerupQueue = (
   }
 };
 
-const client: Client = new Paho.Client(BROKER, BROKER_PORT, "clientjs");
+const client: Client = new Paho.Client(BROKER, BROKER_PORT, Math.random().toString());
 
 const onConnect = (client: Client) => (): void => {
   console.log("Connected!");
