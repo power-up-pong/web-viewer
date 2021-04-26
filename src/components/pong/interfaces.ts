@@ -33,6 +33,7 @@ export interface DerivedConstants {
   POWERUP_RADIUS: number;
   CANVAS_PADDING: number;
   SCALE: number;
+  POWERUP_CANVAS_HEIGHT: number;
   CANVAS_HEIGHT: number;
   CANVAS_WIDTH: number;
 }

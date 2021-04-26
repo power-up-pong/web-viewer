@@ -21,7 +21,6 @@ import {
   GAME_STATE_TOPIC,
   USERNAME,
   PASSWORD,
-  POWERUP_CANVAS_HEIGHT,
 } from "./constants";
 import {
   defaultGameProps,
@@ -65,7 +64,7 @@ const Pong: FunctionalComponent = () => {
     }
   }, [gameState, gameProps, derivedConstants]);
 
-  const { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS } = derivedConstants;
+  const { POWERUP_CANVAS_HEIGHT, CANVAS_HEIGHT, CANVAS_WIDTH } = derivedConstants;
   const [player1_score, player2_score] = map(gameState.players, "score");
 
   return (
