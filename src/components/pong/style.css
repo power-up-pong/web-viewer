@@ -13,6 +13,9 @@
   flex-direction: column;
 }
 
+/* I used this site to help set up the PowerUp Legend
+https://stackoverflow.com/questions/32412509/display-square-in-html */
+
 #squares div {
   /* these styles will let the divs line up next to each other
      while accepting dimensions */
@@ -34,12 +37,6 @@
   background: purple;
   border: black solid 1px;
 }
-
-/* .spaceBetweenStyle {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-} */
 
 .squareText {
   margin-top: 5px;

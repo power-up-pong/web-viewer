@@ -21,6 +21,7 @@ import {
   GAME_STATE_TOPIC,
   USERNAME,
   PASSWORD,
+  POWERUP_CANVAS_HEIGHT,
 } from "./constants";
 import {
   defaultGameProps,
@@ -70,6 +71,7 @@ const Pong: FunctionalComponent = () => {
   return (
     <div class={style.pong}>
       <div class={style.center}>
+        {/* These lines of code helped testing and debugging of PowerUp Pong */}
         {/* <p>Game State: {JSON.stringify(gameState)}</p> */}
         {/* <p>Game Properties: {JSON.stringify(gameProps)}</p> */}
         <div
@@ -131,8 +133,7 @@ const Pong: FunctionalComponent = () => {
         </div>
         <canvas
           ref={canvasRef_powerup}
-          // TODO: make this height a constant to use within the draw function
-          height={25}
+          height={POWERUP_CANVAS_HEIGHT}
           width={CANVAS_WIDTH}
           style={{ border: "1px solid purple" }}
         />

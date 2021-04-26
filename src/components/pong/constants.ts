@@ -12,3 +12,6 @@ export const PASSWORD = "piot";
 /* Topic strings */
 export const GAME_STATE_TOPIC = "pup/game";
 export const GAME_PROPS_TOPIC = "pup/game-props";
+
+/* Draw Constants */
+export const POWERUP_CANVAS_HEIGHT = 25;
