@@ -32,13 +32,6 @@ import {
 } from "./interfaces";
 import style from "./style.css";
 import { getDerivedConstants } from "./getDerivedConstants";
-import { map } from "lodash";
-
-// useful commands:
-// mosquitto_pub -t cs326/jcalvin -m "Hello World" -h mqtt.eclipseprojects.io
-// mosquitto_sub -h mqtt.eclipseprojects.io -t cs326/jcalvin
-// mosquitto_sub -h iot.cs.calvin.edu -t pup/ctrl1 -u cs326 -P piot
-// https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
 
 const Pong: FunctionalComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -65,7 +58,7 @@ const Pong: FunctionalComponent = () => {
   }, [gameState, gameProps, derivedConstants]);
 
   const { POWERUP_CANVAS_HEIGHT, CANVAS_HEIGHT, CANVAS_WIDTH } = derivedConstants;
-  const [player1_score, player2_score] = map(gameState.players, "score");
+  const [player1_score, player2_score] = gameState.players.map(({score}) => score);
 
   return (
     <div class={style.pong}>
