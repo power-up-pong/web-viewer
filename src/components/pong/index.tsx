@@ -35,7 +35,7 @@ import { getDerivedConstants } from "./getDerivedConstants";
 
 const Pong: FunctionalComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const canvasRef_powerup = useRef<HTMLCanvasElement>(null);
+  const canvasRefPowerup = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<GameState>(defaultGameState);
   const [gameProps, setGameProps] = useState<GameProps>(defaultGameProps);
 
@@ -50,22 +50,32 @@ const Pong: FunctionalComponent = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
-    const canvas_powerup = canvasRef_powerup.current;
-    const context_powerup = canvas_powerup.getContext("2d");
-    if (context && context_powerup) {
-      draw(context, context_powerup, gameState, gameProps, derivedConstants);
+    const canvasPowerup = canvasRefPowerup.current;
+    const contextPowerup = canvasPowerup.getContext("2d");
+    if (context && contextPowerup) {
+      draw(context, contextPowerup, gameState, gameProps, derivedConstants);
     }
   }, [gameState, gameProps, derivedConstants]);
 
-  const { POWERUP_CANVAS_HEIGHT, CANVAS_HEIGHT, CANVAS_WIDTH } = derivedConstants;
-  const [player1_score, player2_score] = gameState.players.map(({score}) => score);
+  const {
+    POWERUP_CANVAS_HEIGHT,
+    CANVAS_HEIGHT,
+    CANVAS_WIDTH,
+  } = derivedConstants;
+  const [player1_score, player2_score] = gameState.players.map(
+    ({ score }) => score
+  );
 
   return (
     <div class={style.pong}>
       <div class={style.center}>
         {/* These lines of code helped testing and debugging of PowerUp Pong */}
-        {/* <p>Game State: {JSON.stringify(gameState)}</p> */}
-        {/* <p>Game Properties: {JSON.stringify(gameProps)}</p> */}
+        {DEBUG && (
+          <div>
+            <p>Game State: {JSON.stringify(gameState)}</p>
+            <p>Game Properties: {JSON.stringify(gameProps)}</p>
+          </div>
+        )}
         <div
           style={{
             display: "flex",
@@ -93,9 +103,7 @@ const Pong: FunctionalComponent = () => {
               }}
             >
               <div id={style.square1}></div>
-              <p class={style.squareText}>
-                Grow
-              </p>
+              <p class={style.squareText}>Grow</p>
             </div>
             <div
               style={{
@@ -105,9 +113,7 @@ const Pong: FunctionalComponent = () => {
               }}
             >
               <div id={style.square2}></div>
-              <p class={style.squareText}>
-                FastBall
-              </p>
+              <p class={style.squareText}>FastBall</p>
             </div>
             <div
               style={{
@@ -117,14 +123,12 @@ const Pong: FunctionalComponent = () => {
               }}
             >
               <div id={style.square3}></div>
-              <p class={style.squareText}>
-                Follow
-              </p>
+              <p class={style.squareText}>Follow</p>
             </div>
           </div>
         </div>
         <canvas
-          ref={canvasRef_powerup}
+          ref={canvasRefPowerup}
           height={POWERUP_CANVAS_HEIGHT}
           width={CANVAS_WIDTH}
           style={{ border: "1px solid purple" }}
@@ -145,18 +149,18 @@ export default Pong;
 // ref: https://stackoverflow.com/a/54153800/9931154
 const clearCanvas = (
   ctx: CanvasRenderingContext2D,
-  ctx_powerup: CanvasRenderingContext2D,
+  ctxPowerup: CanvasRenderingContext2D,
   { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS }: DerivedConstants
 ): void => {
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  ctx_powerup.fillStyle = "rgb(255, 255, 255)";
-  ctx_powerup.fillRect(0, 0, CANVAS_WIDTH, POWERUP_RADIUS * 2);
+  ctxPowerup.fillStyle = "rgb(255, 255, 255)";
+  ctxPowerup.fillRect(0, 0, CANVAS_WIDTH, POWERUP_RADIUS * 2);
 };
 
 const draw = (
   ctx: CanvasRenderingContext2D,
-  ctx_powerup: CanvasRenderingContext2D,
+  ctxPowerup: CanvasRenderingContext2D,
   gameState: GameState,
   gameProps: GameProps,
   derivedConstants: DerivedConstants
@@ -188,7 +192,7 @@ const draw = (
   const PADDLE_THICKNESS = 1;
   const BALL_RADIUS = 2;
 
-  clearCanvas(ctx, ctx_powerup, derivedConstants);
+  clearCanvas(ctx, ctxPowerup, derivedConstants);
 
   ctx.fillStyle = "#000000";
   // draw paddle 1
@@ -229,8 +233,8 @@ const draw = (
     });
   }
 
-  drawPowerupQueue(ctx_powerup, powerups1, CANVAS_WIDTH);
-  drawPowerupQueue(ctx_powerup, powerups2, CANVAS_WIDTH, false);
+  drawPowerupQueue(ctxPowerup, powerups1, CANVAS_WIDTH);
+  drawPowerupQueue(ctxPowerup, powerups2, CANVAS_WIDTH, false);
 
   // draw ball
   ctx.fillStyle = "#000000";
@@ -293,7 +297,10 @@ const drawPowerupQueue = (
   }
 };
 
-const client: Client = new Paho.Client(BROKER, BROKER_PORT, Math.random().toString());
+// This is a small hack to make sure simultaneous viewers can be found.
+const WEB_SOCKET_ID = Math.random().toString();
+
+const client: Client = new Paho.Client(BROKER, BROKER_PORT, WEB_SOCKET_ID);
 
 const onConnect = (client: Client) => (): void => {
   console.log("Connected!");
@@ -301,9 +308,10 @@ const onConnect = (client: Client) => (): void => {
   client.subscribe(GAME_PROPS_TOPIC);
 };
 
+const KEEP_ALIVE_INTERVAL_SEC = 60
 const options: ConnectionOptions = {
   useSSL: false,
-  keepAliveInterval: 60,
+  keepAliveInterval: KEEP_ALIVE_INTERVAL_SEC,
   onSuccess: onConnect(client),
   userName: USERNAME,
   password: PASSWORD,
