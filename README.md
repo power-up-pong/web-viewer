@@ -1,5 +1,7 @@
 # web-viewer
 
+**Note:** The bulk of the work has been done in `src/components/pong`. The rest of the files were bootstrapped using the Preact CLI and have been modified for this project.
+
 ## CLI Commands
 
 - `npm install`: Installs dependencies
@@ -8,7 +10,7 @@
 
 - `npm run serve`: Run a production-like server
 
-`npm run serve` does not seem to be working currently.
+Note: need to build before serving.
 
 - `npm run build`: Production-ready build
 

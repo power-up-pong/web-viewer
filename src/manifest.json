@@ -1,6 +1,6 @@
 {
-  "name": "Power Up Pong",
-  "short_name": "Power Up Pong",
+  "name": "PowerUp Pong",
+  "short_name": "PowerUp Pong",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
