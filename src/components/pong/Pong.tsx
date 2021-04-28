@@ -1,6 +1,6 @@
 /*
 A web viewer for a Power-Up Pong game using websockets
-Written by Jon Ellis, Charlie Kornoelje, and Ryan Vreeke
+Written by Jon Ellis (jde27), Charlie Kornoelje (cek26), and Ryan Vreeke (rjv59)
 for CS 326 Final Project at Calvin University, April 2021
 */
 
