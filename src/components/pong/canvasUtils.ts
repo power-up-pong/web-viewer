@@ -20,6 +20,7 @@ export const draw = (
   gameProps: GameProps,
   derivedConstants: DerivedConstants
 ): void => {
+  // get constants for the functions
   const { powerup_radius } = gameProps;
   const {
     players: [player1, player2],
@@ -71,12 +72,7 @@ export const draw = (
   if (powerups.length > 0) {
     powerups.forEach((powerup) => {
       const { pos, type } = powerup;
-      ctx.fillStyle =
-        type === "paddleGrow"
-          ? "green"
-          : type === "fastBall"
-          ? "orange"
-          : "purple";
+      ctx.fillStyle = getPowerupColor(type);
       if (pos !== null) {
         const [xPos, yPos] = pos;
         ctx.fillRect(
@@ -136,12 +132,7 @@ const drawPowerupQueue = (
             POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER
           );
         }
-        ctxPowerup.fillStyle =
-          type === "paddleGrow"
-            ? "green"
-            : type === "fastBall"
-            ? "orange"
-            : "purple";
+        ctxPowerup.fillStyle = getPowerupColor(type);
         ctxPowerup.fillRect(
           xPos,
           POWERUP_CANVAS_OFFSET,
@@ -151,4 +142,12 @@ const drawPowerupQueue = (
       }
     });
   }
+};
+
+const getPowerupColor = (type: string) => {
+  return type === "paddleGrow"
+    ? "green"
+    : type === "fastBall"
+    ? "orange"
+    : "purple";
 };
