@@ -21,11 +21,13 @@
     ]
   },
   "dependencies": {
+    "canvas-confetti": "1.4.0",
     "paho-mqtt": "1.1.0",
     "preact": "^10.3.1",
     "preact-render-to-string": "^5.1.4"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "1.4.0",
     "@types/enzyme": "^3.10.5",
     "@types/jest": "^26.0.8",
     "@types/paho-mqtt": "1.0.4",

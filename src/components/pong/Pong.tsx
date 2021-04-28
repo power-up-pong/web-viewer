@@ -18,6 +18,8 @@ import { getDerivedConstants } from "./getDerivedConstants";
 import { client, onMessageArrived } from "./wsClient";
 import { draw } from "./canvasUtils";
 import { PowerupLegend } from "./PowerUpLegend";
+import { useConfetti } from "./useConfetti";
+
 
 export const Pong: FunctionalComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -51,6 +53,8 @@ export const Pong: FunctionalComponent = () => {
   const [player1_score, player2_score] = gameState.players.map(
     ({ score }) => score
   );
+
+  useConfetti([player1_score, player2_score]);
 
   return (
     <div class={style.pong}>
