@@ -4,7 +4,7 @@ import style from "./style.css";
 const Header: FunctionalComponent = () => {
   return (
     <header class={style.header}>
-      <h1>Power Up Pong</h1>
+      <h1>PowerUp Pong</h1>
     </header>
   );
 };
