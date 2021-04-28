@@ -8,6 +8,8 @@
 
 - `npm run serve`: Run a production-like server
 
+`npm run serve` does not seem to be working currently.
+
 - `npm run build`: Production-ready build
 
 - `npm run lint`: Pass TypeScript files using ESLint
