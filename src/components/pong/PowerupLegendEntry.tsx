@@ -6,6 +6,7 @@ interface PowerupLegendEntryProps {
   squareStyle: string;
 }
 
+/** One entry in a the powerup legend */
 export const PowerupLegendEntry: FunctionalComponent<PowerupLegendEntryProps> = ({
   text,
   squareStyle,

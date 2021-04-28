@@ -13,6 +13,7 @@ import {
 } from "./constants";
 import { GameProps, GameState } from "./interfaces";
 
+// Create a MQTT websocket connection
 export const client: Client = new Paho.Client(
   BROKER,
   BROKER_PORT,

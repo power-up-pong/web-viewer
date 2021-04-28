@@ -1,18 +1,7 @@
 import { DEBUG } from "./constants";
 import { DerivedConstants, GameProps, GameState, Powerup } from "./interfaces";
 
-// ref: https://stackoverflow.com/a/54153800/9931154
-const clearCanvases = (
-  ctx: CanvasRenderingContext2D,
-  ctxPowerup: CanvasRenderingContext2D,
-  { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS }: DerivedConstants
-): void => {
-  ctx.fillStyle = "rgb(255, 255, 255)";
-  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  ctxPowerup.fillStyle = "rgb(255, 255, 255)";
-  ctxPowerup.fillRect(0, 0, CANVAS_WIDTH, POWERUP_RADIUS * 2);
-};
-
+/** Draws the current state of the pong game */
 export const draw = (
   ctx: CanvasRenderingContext2D,
   ctxPowerup: CanvasRenderingContext2D,
@@ -103,6 +92,22 @@ export const draw = (
   ctx.fill();
 };
 
+/**
+ * Clears all of the canvases for a new draw.
+ * ref: https://stackoverflow.com/a/54153800/9931154
+ * */
+ const clearCanvases = (
+  ctx: CanvasRenderingContext2D,
+  ctxPowerup: CanvasRenderingContext2D,
+  { CANVAS_HEIGHT, CANVAS_WIDTH, POWERUP_RADIUS }: DerivedConstants
+): void => {
+  ctx.fillStyle = "rgb(255, 255, 255)";
+  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctxPowerup.fillStyle = "rgb(255, 255, 255)";
+  ctxPowerup.fillRect(0, 0, CANVAS_WIDTH, POWERUP_RADIUS * 2);
+};
+
+/** Draws the inventory of powerups for a player */
 const drawPowerupQueue = (
   ctxPowerup: CanvasRenderingContext2D,
   powerups: Powerup[],
@@ -144,6 +149,7 @@ const drawPowerupQueue = (
   }
 };
 
+/** Get the color of the powerup based on its type */
 const getPowerupColor = (type: string) => {
   return type === "paddleGrow"
     ? "green"

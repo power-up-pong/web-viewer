@@ -2,6 +2,7 @@ import { FunctionalComponent, h } from "preact";
 import { PowerupLegendEntry } from "./PowerupLegendEntry";
 import style from "./style.css";
 
+/** Contains information about the powerups */
 export const PowerupLegend: FunctionalComponent = () => {
   return (
     <div

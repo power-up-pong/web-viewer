@@ -27,6 +27,7 @@ export const Pong: FunctionalComponent = () => {
   const [gameState, setGameState] = useState<GameState>(defaultGameState);
   const [gameProps, setGameProps] = useState<GameProps>(defaultGameProps);
 
+  // bind callback to MQTT websocket client
   client.onMessageArrived = useMemo(() => {
     return onMessageArrived(setGameState, setGameProps);
   }, []);
@@ -35,6 +36,7 @@ export const Pong: FunctionalComponent = () => {
     return getDerivedConstants(gameProps);
   }, [gameProps]);
 
+  // update the canvases when new data is gathered
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
@@ -54,6 +56,7 @@ export const Pong: FunctionalComponent = () => {
     ({ score }) => score
   );
 
+  // add confetti when score
   useConfetti([player1_score, player2_score]);
 
   return (
