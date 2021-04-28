@@ -86,47 +86,7 @@ const Pong: FunctionalComponent = () => {
           <h2>Player 1 Score: {player1_score}</h2>
           <h2>Player 2 Score: {player2_score}</h2>
         </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "41%",
-          }}
-        >
-          <h1>PowerUps</h1>
-          <div id={style.squares}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <div id={style.square1}></div>
-              <p class={style.squareText}>Grow</p>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <div id={style.square2}></div>
-              <p class={style.squareText}>FastBall</p>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <div id={style.square3}></div>
-              <p class={style.squareText}>Follow</p>
-            </div>
-          </div>
-        </div>
+        <PowerupLegend />
         <canvas
           ref={canvasRefPowerup}
           height={POWERUP_CANVAS_HEIGHT}
@@ -145,6 +105,43 @@ const Pong: FunctionalComponent = () => {
 };
 
 export default Pong;
+
+const PowerupLegend = () => {
+  return (
+    <div
+      style={{
+        display: "flex",
+      }}
+    >
+      <h1>PowerUps</h1>
+      <div id={style.squares}>
+        <PowerupLegendEntry text="Grow" squareStyle={style.square1} />
+        <PowerupLegendEntry text="Fast Ball" squareStyle={style.square2} />
+        <PowerupLegendEntry text="Follow" squareStyle={style.square3} />
+      </div>
+    </div>
+  );
+};
+
+interface PowerupLegendEntryProps {
+  text: string;
+  squareStyle: string;
+}
+
+const PowerupLegendEntry = ({ text, squareStyle }: PowerupLegendEntryProps) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        width: "100%",
+      }}
+    >
+      <div id={squareStyle} />
+      <p class={style.squareText}>{text}</p>
+    </div>
+  );
+};
 
 // ref: https://stackoverflow.com/a/54153800/9931154
 const clearCanvas = (
@@ -252,11 +249,11 @@ const draw = (
 };
 
 const drawPowerupQueue = (
-  ctx_powerup: CanvasRenderingContext2D,
+  ctxPowerup: CanvasRenderingContext2D,
   powerups: Powerup[],
   canvasWidth: number,
   left: boolean = true
-) => {
+): void => {
   const POWERUP_CANVAS_WIDTH = 15;
   const POWERUP_CANVAS_OFFSET = 5;
   const MAX_POWERUPS_SHOWN = 5;
@@ -272,21 +269,21 @@ const drawPowerupQueue = (
       const { time_used, type } = powerup;
       if (i < MAX_POWERUPS_SHOWN) {
         if (time_used !== null) {
-          ctx_powerup.fillStyle = "red";
-          ctx_powerup.fillRect(
+          ctxPowerup.fillStyle = "red";
+          ctxPowerup.fillRect(
             xPos - USED_POWERUP_BORDER / 2,
             POWERUP_CANVAS_OFFSET - USED_POWERUP_BORDER / 2,
             POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER,
             POWERUP_CANVAS_WIDTH + USED_POWERUP_BORDER
           );
         }
-        ctx_powerup.fillStyle =
+        ctxPowerup.fillStyle =
           type === "paddleGrow"
             ? "green"
             : type === "fastBall"
             ? "orange"
             : "purple";
-        ctx_powerup.fillRect(
+        ctxPowerup.fillRect(
           xPos,
           POWERUP_CANVAS_OFFSET,
           POWERUP_CANVAS_WIDTH,
@@ -308,7 +305,7 @@ const onConnect = (client: Client) => (): void => {
   client.subscribe(GAME_PROPS_TOPIC);
 };
 
-const KEEP_ALIVE_INTERVAL_SEC = 60
+const KEEP_ALIVE_INTERVAL_SEC = 60;
 const options: ConnectionOptions = {
   useSSL: false,
   keepAliveInterval: KEEP_ALIVE_INTERVAL_SEC,
